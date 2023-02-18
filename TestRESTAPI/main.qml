@@ -23,7 +23,7 @@ Window {
     }
 
     ListModel {
-        id: model
+        id: model1
         ListElement {
             name: "Bill Smith"
             number: "555 3264"
@@ -38,21 +38,32 @@ Window {
         }
     }
 
+//    ListView {
+//        width: 200; height: 250
+//        anchors.fill: parent
+//        model: mymodel
+
+//        delegate: Text {
+//            //required property string color
+//            //required property string textt
+
+//            text: "Animal: " + colorr + ", " + textt
+//        }
+//    }
+
     ListView {
             id: myListView
             anchors.fill: parent
-            //required model1
+            model: mymodel
             delegate: Component {
                 Item {
                     width: parent.width
                     height: 40
                     Column {
                         Text {
-                            required property string color
-                            text: 'color:' + color }
+                            text: 'color:' + colorr }
                         Text {
-                            required property string text
-                            text: 'text:' + text }
+                            text: 'text:' + textt }
                     }
                     MouseArea {
                         anchors.fill: parent
@@ -61,14 +72,14 @@ Window {
                 }
             }
             highlight: Rectangle {
-                color: 'grey'
+                color: 'orange'
                 Text {
                     anchors.centerIn: parent
-                    text: 'Hello ' + model1.get(myListView.currentIndex).text
+                    text: 'Hello '// + mymodel.get(myListView.currentIndex).text
                     color: 'white'
                 }
             }
             focus: true
-            onCurrentItemChanged: console.log(model1.get(myListView.currentIndex).text + ' selected')
+            //onCurrentItemChanged: console.log(mymodel.get(myListView.currentIndex).text + ' selected')
         }
 }

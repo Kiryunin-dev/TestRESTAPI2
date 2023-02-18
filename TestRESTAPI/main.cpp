@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     TestModel testModel;
 
     QQmlApplicationEngine engine;
-    engine.setInitialProperties({{"model1", QVariant::fromValue(&testModel)}});
+    engine.rootContext()->setContextProperty("mymodel", &testModel);
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
@@ -28,12 +28,12 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
     engine.load(url);
 
-    QQuickView view;
-        view.setResizeMode(QQuickView::SizeRootObjectToView);
-        view.setInitialProperties({{"model", QVariant::fromValue(&testModel)}});
-    //![0]
-        view.setSource(QUrl("qrc:view.qml"));
-        view.show();
+//    QQuickView view;
+//        view.setResizeMode(QQuickView::SizeRootObjectToView);
+//        view.setInitialProperties({{"model", QVariant::fromValue(&testModel)}});
+//    //![0]
+//        view.setSource(QUrl("qrc:view.qml"));
+//        view.show();
 
 
     return app.exec();

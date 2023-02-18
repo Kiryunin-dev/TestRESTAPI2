@@ -55,7 +55,7 @@ QVariant TestModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> TestModel::roleNames() const
 {
     QHash<int, QByteArray> roles = QAbstractListModel::roleNames();
-    roles[ColorRole] = "color";
+    roles[ColorRole] = "colorr";
     roles[TextRole] = "textt";
 
     return roles;
