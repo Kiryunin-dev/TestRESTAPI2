@@ -6,7 +6,27 @@
 #include <QtQuick/qquickitem.h>
 #include <QtQuick/qquickview.h>
 
+#include <QJsonObject>
+
 #include "backend.h"
+#include "RESTAPIModule.h"
+#include "database.h"
+
+void handleFunction(const QJsonObject &obj)
+{
+    qDebug() << "handleFunction";
+    for(const auto &jsonElem: obj){
+        qDebug() << jsonElem.toString();
+    }
+}
+
+void errorFunction(const QJsonObject &obj)
+{
+    qDebug() << "errorFunction";
+    for(const auto &jsonElem: obj){
+        qDebug() << jsonElem.toString();
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -16,7 +36,21 @@ int main(int argc, char *argv[])
 
     //qmlRegisterType<BackEnd>("io.qt.examples.backend", 1, 0, "BackEnd");
 
+    Database db;
     TestModel testModel;
+    RESTAPIModule *raModule;
+
+    for (int i = 1; i < 28; i++){
+        raModule = new RESTAPIModule();
+        raModule->initRESTAPIModule("", 0, nullptr);
+        raModule->sendRequest(i, 2);
+        QObject::connect(raModule, &RESTAPIModule::dataRecieved, &testModel, &TestModel::textRecieved);
+    }
+
+//    for (int i = 1; i < 30; i++){
+//        testModel.add("");
+//    }
+
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("mymodel", &testModel);

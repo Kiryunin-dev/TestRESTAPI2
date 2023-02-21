@@ -7,36 +7,36 @@ Window {
     id: root
     width: 640
     height: 480
-    title: qsTr("Hello World")
+    title: qsTr("JSON REST API Клиент")
     visible: true
 
     BackEnd {
         id: backend
     }
 
-    TextField {
-        text: backend.userName
-        placeholderText: qsTr("User name")
-        anchors.centerIn: parent
+//    TextField {
+//        text: backend.userName
+//        placeholderText: qsTr("User name")
+//        anchors.centerIn: parent
 
-        onTextChanged: backend.userName = text
-    }
+//        onTextChanged: backend.userName = text
+//    }
 
-    ListModel {
-        id: model1
-        ListElement {
-            name: "Bill Smith"
-            number: "555 3264"
-        }
-        ListElement {
-            name: "John Brown"
-            number: "555 8426"
-        }
-        ListElement {
-            name: "Sam Wise"
-            number: "555 0473"
-        }
-    }
+//    ListModel {
+//        id: model1
+//        ListElement {
+//            name: "Bill Smith"
+//            number: "555 3264"
+//        }
+//        ListElement {
+//            name: "John Brown"
+//            number: "555 8426"
+//        }
+//        ListElement {
+//            name: "Sam Wise"
+//            number: "555 0473"
+//        }
+//    }
 
 //    ListView {
 //        width: 200; height: 250
@@ -57,17 +57,21 @@ Window {
             model: mymodel
             delegate: Component {
                 Item {
-                    width: parent.width
-                    height: 40
+                    width: 5000
+                    height: 30
                     Column {
+//                        Text {
+//                            text: 'Дата:' + date }
                         Text {
-                            text: 'color:' + colorr }
-                        Text {
-                            text: 'text:' + textt }
+                            text: 'В этот день:' + textt }
                     }
                     MouseArea {
                         anchors.fill: parent
-                        onDoubleClicked: myListView.currentIndex = index
+                        onClicked: {
+
+                            myListView.currentIndex = index;
+                        }
+                        onDoubleClicked: textWindow.open(textt);
                     }
                 }
             }
@@ -81,5 +85,31 @@ Window {
             }
             focus: true
             //onCurrentItemChanged: console.log(mymodel.get(myListView.currentIndex).text + ' selected')
+        }
+
+    Window{
+            id: textWindow
+            title: qsTr("Описание")
+            width: 540
+            height: 180
+            visible: false
+
+            Label {
+                id: txtField
+                text: "No data"
+                anchors.centerIn: parent
+                anchors.fill: parent
+                wrapMode: Label.WordWrap
+                x: 20
+                y: 20
+            }
+
+            function open(textData){
+                visible = true;
+                txtField.text = textData;
+            }
+            function close(){
+                visible = false
+            }
         }
 }

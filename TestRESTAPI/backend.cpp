@@ -23,8 +23,6 @@ void BackEnd::setUserName(const QString &userName)
 TestModel::TestModel(QObject *parent):
     QAbstractListModel(parent)
 {
-    m_data.append("old");
-    m_data.append("another old");
 }
 
 int TestModel::rowCount(const QModelIndex &parent) const
@@ -44,7 +42,7 @@ QVariant TestModel::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case ColorRole:
-        return QVariant(index.row() < 2 ? "orange" : "skyblue");
+        return "";
     case TextRole:
         return m_data.at(index.row());
     default:
@@ -55,19 +53,24 @@ QVariant TestModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> TestModel::roleNames() const
 {
     QHash<int, QByteArray> roles = QAbstractListModel::roleNames();
-    roles[ColorRole] = "colorr";
+    roles[ColorRole] = "date";
     roles[TextRole] = "textt";
 
     return roles;
 }
 
-void TestModel::add()
+void TestModel::add(const QString &text)
 {
     beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
-    m_data.append("new");
+    m_data.append(text);
     endInsertRows();
 
-    m_data[0] = QString("Size: %1").arg(m_data.size());
+    //m_data[0] = QString("Size: %1").arg(m_data.size());
     QModelIndex index = createIndex(0, 0, static_cast<void *>(0));
     emit dataChanged(index, index);
+}
+
+void TestModel::textRecieved(QString text)
+{
+    add(text);
 }

@@ -3,6 +3,7 @@ QT += quick
 CONFIG += c++11
 
 CONFIG += qmltypes
+QT += sql
 QML_IMPORT_NAME = io.qt.examples.backend
 QML_IMPORT_MAJOR_VERSION = 1
 
@@ -19,7 +20,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         backend.cpp \
-        main.cpp
+        database.cpp \
+        main.cpp \
+        restapimodule.cpp
 
 RESOURCES += qml.qrc
 
@@ -35,4 +38,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    backend.h
+    backend.h \
+    database.h \
+    restapimodule.h

@@ -42,10 +42,13 @@ public:
     virtual QVariant data(const QModelIndex &index, int role) const;
     virtual QHash<int, QByteArray> roleNames() const;
 
-    Q_INVOKABLE void add();
+    Q_INVOKABLE void add(const QString &text);
 
 private:
     QStringList m_data;
+
+public slots:
+    void textRecieved(QString text);
 };
 
 #endif // BACKEND_H
