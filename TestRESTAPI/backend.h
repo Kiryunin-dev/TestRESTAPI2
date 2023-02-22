@@ -26,14 +26,20 @@ private:
     QString m_userName;
 };
 
+struct Record
+{
+    QString text;
+    QString comment;
+};
+
 class TestModel : public QAbstractListModel
 {
     Q_OBJECT
 
 public:
     enum Roles {
-        ColorRole = Qt::UserRole + 1,
-        TextRole
+        TextRole = Qt::UserRole + 1,
+        CommentRole
     };
 
     TestModel(QObject *parent = 0);
@@ -42,13 +48,14 @@ public:
     virtual QVariant data(const QModelIndex &index, int role) const;
     virtual QHash<int, QByteArray> roleNames() const;
 
-    Q_INVOKABLE void add(const QString &text);
+    Q_INVOKABLE void add(const QString &text, const QString &comment);
 
 private:
-    QStringList m_data;
+    QVector<Record> listData;
 
 public slots:
     void textRecieved(QString text);
+    void addComment(QString commentText, int index);
 };
 
 #endif // BACKEND_H

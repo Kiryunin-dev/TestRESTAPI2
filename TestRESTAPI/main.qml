@@ -14,6 +14,8 @@ Window {
         id: backend
     }
 
+    signal qmlSignal(string comment, int index)
+
 //    TextField {
 //        text: backend.userName
 //        placeholderText: qsTr("User name")
@@ -53,17 +55,30 @@ Window {
 
     ListView {
             id: myListView
-            anchors.fill: parent
+            width: parent.width
+            height: parent.height - commentField.height
+            y: 8
+            anchors.horizontalCenter: parent.horizontalCenter
             model: mymodel
             delegate: Component {
                 Item {
-                    width: 5000
-                    height: 30
+                    id: listItem
+                    width: myListView.width
+                    height: 40
+                    Rectangle {
+                        id: itemBorder
+                        width: listItem.width
+                        height: listItem.height
+                        border.color: "black"
+                        color: "transparent"
+                    }
                     Column {
-//                        Text {
-//                            text: 'Дата:' + date }
+                        y: 5
+                        x: 5
                         Text {
-                            text: 'В этот день:' + textt }
+                            text: 'В этот день: ' + textt }
+                        Text {
+                            text: 'Комментарий: ' + comment }
                     }
                     MouseArea {
                         anchors.fill: parent
@@ -73,19 +88,44 @@ Window {
                         }
                         onDoubleClicked: textWindow.open(textt);
                     }
+
                 }
             }
             highlight: Rectangle {
                 color: 'orange'
-                Text {
-                    anchors.centerIn: parent
-                    text: 'Hello '// + mymodel.get(myListView.currentIndex).text
-                    color: 'white'
-                }
+//                Text {
+//                    anchors.centerIn: parent
+//                    text: 'Hello '// + mymodel.get(myListView.currentIndex).text
+//                    color: 'white'
+//                }
             }
             focus: true
+            TextField {
+                id: commentField
+                text: backend.userName
+                placeholderText: qsTr("Комментарий")
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                width: parent.width - commentBtn.width
+                onTextChanged: backend.userName = text
+
+                Button {
+                    id: commentBtn
+                    text: "Добавить комментарий"
+                    anchors.left: parent.right
+                    onClicked: root.qmlSignal(commentField.text, myListView.currentIndex)
+                }
+            }
             //onCurrentItemChanged: console.log(mymodel.get(myListView.currentIndex).text + ' selected')
         }
+
+//    TextEdit{
+//        anchors.horizontalCenter: parent.horizontalCenter
+//        width: parent.width
+//        height: 100
+//    }
+
+
 
     Window{
             id: textWindow

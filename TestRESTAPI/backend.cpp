@@ -1,4 +1,5 @@
 #include "backend.h"
+#include "database.h"
 
 BackEnd::BackEnd(QObject *parent) :
     QObject(parent)
@@ -31,7 +32,7 @@ int TestModel::rowCount(const QModelIndex &parent) const
         return 0;
     }
 
-    return m_data.size();
+    return listData.size();
 }
 
 QVariant TestModel::data(const QModelIndex &index, int role) const
@@ -41,10 +42,10 @@ QVariant TestModel::data(const QModelIndex &index, int role) const
     }
 
     switch (role) {
-    case ColorRole:
-        return "";
     case TextRole:
-        return m_data.at(index.row());
+        return listData.at(index.row()).text;
+    case CommentRole:
+        return listData.at(index.row()).comment;
     default:
         return QVariant();
     }
@@ -53,24 +54,42 @@ QVariant TestModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> TestModel::roleNames() const
 {
     QHash<int, QByteArray> roles = QAbstractListModel::roleNames();
-    roles[ColorRole] = "date";
     roles[TextRole] = "textt";
+    roles[CommentRole] = "comment";
 
     return roles;
 }
 
-void TestModel::add(const QString &text)
+void TestModel::add(const QString &text, const QString &comment)
 {
-    beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
-    m_data.append(text);
+    beginInsertRows(QModelIndex(), listData.size(), listData.size());
+    Record r{text, comment};
+    listData.push_back(r);
     endInsertRows();
 
-    //m_data[0] = QString("Size: %1").arg(m_data.size());
     QModelIndex index = createIndex(0, 0, static_cast<void *>(0));
     emit dataChanged(index, index);
 }
 
 void TestModel::textRecieved(QString text)
 {
-    add(text);
+    Database db;
+    db.InitDB(text);
+    QString commentText = db.ReadFromComment(qHash(text));
+    add(text, commentText);
+    db.WriteToCache(text);
+}
+
+void TestModel::addComment(QString commentText, int index)
+{
+    Record r{listData.at(index).text, commentText};
+    listData.replace(index, r);
+
+    Database db;
+    db.InitDB("addComment");
+    db.WriteToComment(commentText, qHash(r.text));
+
+    QModelIndex modelIndex = createIndex(index, 0, static_cast<void *>(0));
+    emit dataChanged(modelIndex, modelIndex);
+    qDebug() << commentText << index;
 }

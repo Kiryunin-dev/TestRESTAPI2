@@ -37,20 +37,22 @@ int main(int argc, char *argv[])
     //qmlRegisterType<BackEnd>("io.qt.examples.backend", 1, 0, "BackEnd");
 
     Database db;
+    db.InitDB();
     TestModel testModel;
     RESTAPIModule *raModule;
 
     for (int i = 1; i < 28; i++){
         raModule = new RESTAPIModule();
+        QObject::connect(raModule, &RESTAPIModule::dataRecieved, &testModel, &TestModel::textRecieved);
         raModule->initRESTAPIModule("", 0, nullptr);
         raModule->sendRequest(i, 2);
-        QObject::connect(raModule, &RESTAPIModule::dataRecieved, &testModel, &TestModel::textRecieved);
     }
 
-//    for (int i = 1; i < 30; i++){
-//        testModel.add("");
-//    }
-
+    QStringList data = db.ReadFromCache(20);
+    for(const auto &text: data){
+        QString commentText = db.ReadFromComment(qHash(text));
+        testModel.add(text, commentText);
+    }
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("mymodel", &testModel);
@@ -61,6 +63,10 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
+
+    QObject *item = engine.rootObjects().at(0);
+    QObject::connect(item, SIGNAL(qmlSignal(QString, int)),
+                     &testModel, SLOT(addComment(QString, int)));
 
 //    QQuickView view;
 //        view.setResizeMode(QQuickView::SizeRootObjectToView);
