@@ -12,22 +12,6 @@
 #include "RESTAPIModule.h"
 #include "database.h"
 
-void handleFunction(const QJsonObject &obj)
-{
-    qDebug() << "handleFunction";
-    for(const auto &jsonElem: obj){
-        qDebug() << jsonElem.toString();
-    }
-}
-
-void errorFunction(const QJsonObject &obj)
-{
-    qDebug() << "errorFunction";
-    for(const auto &jsonElem: obj){
-        qDebug() << jsonElem.toString();
-    }
-}
-
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -41,17 +25,17 @@ int main(int argc, char *argv[])
     TestModel testModel;
     RESTAPIModule *raModule;
 
+    QStringList data = db.ReadFromCache(20);
+    for(const auto &text: data){
+        QString commentText = db.ReadFromComment(qHash(text));
+        testModel.add(text, commentText);
+    }
+
     for (int i = 1; i < 28; i++){
         raModule = new RESTAPIModule();
         QObject::connect(raModule, &RESTAPIModule::dataRecieved, &testModel, &TestModel::textRecieved);
         raModule->initRESTAPIModule("", 0, nullptr);
         raModule->sendRequest(i, 2);
-    }
-
-    QStringList data = db.ReadFromCache(20);
-    for(const auto &text: data){
-        QString commentText = db.ReadFromComment(qHash(text));
-        testModel.add(text, commentText);
     }
 
     QQmlApplicationEngine engine;

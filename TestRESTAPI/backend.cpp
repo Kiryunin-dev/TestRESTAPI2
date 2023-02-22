@@ -1,31 +1,12 @@
 #include "backend.h"
 #include "database.h"
 
-BackEnd::BackEnd(QObject *parent) :
-    QObject(parent)
-{
-    setUserName("Test");
-}
-
-QString BackEnd::userName()
-{
-    return m_userName;
-}
-
-void BackEnd::setUserName(const QString &userName)
-{
-    if (userName == m_userName)
-        return;
-
-    m_userName = userName;
-    emit userNameChanged();
-}
-
 TestModel::TestModel(QObject *parent):
     QAbstractListModel(parent)
 {
 }
 
+// количество строк в модели
 int TestModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid()) {
@@ -35,6 +16,7 @@ int TestModel::rowCount(const QModelIndex &parent) const
     return listData.size();
 }
 
+// получение данных модели
 QVariant TestModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid()) {
@@ -51,6 +33,7 @@ QVariant TestModel::data(const QModelIndex &index, int role) const
     }
 }
 
+// имена ролей
 QHash<int, QByteArray> TestModel::roleNames() const
 {
     QHash<int, QByteArray> roles = QAbstractListModel::roleNames();
@@ -60,6 +43,7 @@ QHash<int, QByteArray> TestModel::roleNames() const
     return roles;
 }
 
+// добавление записи в модель
 void TestModel::add(const QString &text, const QString &comment)
 {
     beginInsertRows(QModelIndex(), listData.size(), listData.size());
@@ -71,6 +55,7 @@ void TestModel::add(const QString &text, const QString &comment)
     emit dataChanged(index, index);
 }
 
+// текст элемента получен из API
 void TestModel::textRecieved(QString text)
 {
     Database db;
@@ -80,13 +65,16 @@ void TestModel::textRecieved(QString text)
     db.WriteToCache(text);
 }
 
+// добавление комментария в модель
 void TestModel::addComment(QString commentText, int index)
 {
+    if (commentText.isEmpty()) return;
+
     Record r{listData.at(index).text, commentText};
     listData.replace(index, r);
 
     Database db;
-    db.InitDB("addComment");
+    db.InitDB(QString("addComment%1").arg(index));
     db.WriteToComment(commentText, qHash(r.text));
 
     QModelIndex modelIndex = createIndex(index, 0, static_cast<void *>(0));

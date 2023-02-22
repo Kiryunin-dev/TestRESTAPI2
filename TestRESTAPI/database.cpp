@@ -81,6 +81,55 @@ void Database::InitDB(QString connectionName)
         if (!dbase.open()){
             qDebug() << "InitDB: Невозможно установить соединение с базой данных";
         }
+        else {
+            QSqlQuery a_query(dbase);
+            QString str = "SELECT name "
+                          "FROM sqlite_master "
+                          "WHERE type='table' AND name='cache_table6'";
+            if (!a_query.exec(str)) {
+                qDebug() << "Не удается прочитать данные о таблице кэша";
+            }
+            else if (!a_query.next()) {
+                str = "CREATE TABLE cache_table6 ("
+                      "id integer PRIMARY KEY NOT NULL, "
+                      "text TEXT"
+                      ");";
+
+                if (!a_query.exec(str)) {
+                    qDebug() << "Не удается создать таблицу кэша";
+                }
+                else {
+                    qDebug() << "Таблица кэша создана";
+                }
+            }
+            else {
+                qDebug() << "Таблица кэша существует";
+            }
+
+//            QSqlQuery a_query(dbase);
+            str = "SELECT name "
+                  "FROM sqlite_master "
+                  "WHERE type='table' AND name='comment_table5'";
+            if (!a_query.exec(str)) {
+                qDebug() << "Не удается прочитать данные о таблице комментариев";
+            }
+            else if (!a_query.next()) {
+                str = "CREATE TABLE comment_table5 ("
+                      "textid integer PRIMARY KEY NOT NULL, "
+                      "comment TEXT"
+                      ");";
+
+                if (!a_query.exec(str)) {
+                    qDebug() << "Не удается создать таблицу комментариев";
+                }
+                else {
+                    qDebug() << "Таблица комментариев создана";
+                }
+            }
+            else {
+                qDebug() << "Таблица комментариев существует";
+            }
+        }
     }
 }
 
@@ -93,19 +142,19 @@ void Database::WriteToCache(const QString &text)
     }
     else {
         QSqlQuery a_query(dbase);
-        QString str = "CREATE TABLE cache_table6 ("
-                      "id integer PRIMARY KEY NOT NULL, "
-                      "text TEXT"
-                ");";
+//        QString str = "CREATE TABLE cache_table6 ("
+//                      "id integer PRIMARY KEY NOT NULL, "
+//                      "text TEXT"
+//                ");";
 
-        if (!a_query.exec(str)) {
-            qDebug() << "Не удается создать таблицу кэша";
-        }
+//        if (!a_query.exec(str)) {
+//            qDebug() << "Не удается создать таблицу кэша";
+//        }
         /*else*/ {
             int hash = qHash(text);
             QString str_insert = "INSERT INTO cache_table6(id, text) "
                                  "VALUES (%1,'%2');";
-            str = str_insert.arg(hash).arg(text);
+            QString str = str_insert.arg(hash).arg(text);
 
             if (!a_query.exec(str)) {
                 qDebug() << "Данные не вставляются в таблицу кэша" << str;
@@ -124,8 +173,8 @@ QStringList Database::ReadFromCache(int count)
     }
     else {
         QSqlQuery a_query(dbase);
-        if (!a_query.exec(QString("SELECT * FROM cache_table5 LIMIT %1").arg(count))) {
-            qDebug() << "Даже селект не получается, я пас.";
+        if (!a_query.exec(QString("SELECT * FROM cache_table6 LIMIT %1").arg(count))) {
+            qDebug() << "ReadFromCache error.Count:" << count << QString(" SELECT * FROM cache_table5 LIMIT %1").arg(count);
         }
         else{
             QSqlRecord rec = a_query.record();
@@ -154,23 +203,23 @@ void Database::WriteToComment(const QString &comment, uint textHash)
     else {
         QSqlQuery a_query(dbase);
 
-        QString str = "CREATE TABLE comment_table5 ("
-                      "textid integer PRIMARY KEY NOT NULL, "
-                      "comment TEXT"
-                ");";
+//        QString str = "CREATE TABLE comment_table5 ("
+//                      "textid integer PRIMARY KEY NOT NULL, "
+//                      "comment TEXT"
+//                ");";
 
-        if (!a_query.exec(str)) {
-            qDebug() << "Не удается создать таблицу комментариев";
-        }
-        /*else*/ {
+//        if (!a_query.exec(str)) {
+//            qDebug() << "Не удается создать таблицу комментариев";
+//        }
+        /*else {*/
             QString str_insert = "INSERT OR REPLACE INTO comment_table5(textid, comment) "
                                  "VALUES (%1, '%2');";
-            str = str_insert.arg(textHash).arg(comment);
+            QString str = str_insert.arg(textHash).arg(comment);
 
             if (!a_query.exec(str)) {
                 qDebug() << "Данные не вставляются в таблицу комментариев";
             }
-        }
+//        }
     }
 }
 

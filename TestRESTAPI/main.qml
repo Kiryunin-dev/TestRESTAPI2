@@ -5,14 +5,14 @@ import io.qt.examples.backend 1.0
 
 Window {
     id: root
-    width: 640
-    height: 480
+    width: 1024
+    height: 768
     title: qsTr("JSON REST API Клиент")
     visible: true
 
-    BackEnd {
-        id: backend
-    }
+//    BackEnd {
+//        id: backend
+//    }
 
     signal qmlSignal(string comment, int index)
 
@@ -56,7 +56,7 @@ Window {
     ListView {
             id: myListView
             width: parent.width
-            height: parent.height - commentField.height
+            height: parent.height - commentField.height - 10
             y: 8
             anchors.horizontalCenter: parent.horizontalCenter
             model: mymodel
@@ -102,12 +102,11 @@ Window {
             focus: true
             TextField {
                 id: commentField
-                text: backend.userName
-                placeholderText: qsTr("Комментарий")
+                placeholderText: qsTr("Введите комментарий")
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 width: parent.width - commentBtn.width
-                onTextChanged: backend.userName = text
+//                onTextChanged: backend.userName = text
 
                 Button {
                     id: commentBtn
